@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.0-42.2.beta <4.0.0'
+  sdk: '>=3.2.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -39,6 +39,10 @@ dependencies:
   firebase_core:
   cloud_firestore:
   get:
+  device_preview:
+  flutter_screenutil:
+  google_sign_in:
+  cached_network_image:
 
 
 dev_dependencies:
@@ -46,7 +50,7 @@ dev_dependencies:
     sdk: flutter
   flutter_launcher_icons:
 
-flutter_launcher_icons:
+flutter_icons:
     android: "ic_launcher"
     ios: true
     image_path: "assets/icons/chat_icon.png"
