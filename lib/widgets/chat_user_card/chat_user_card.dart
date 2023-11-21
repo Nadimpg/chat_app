@@ -1,9 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/main.dart';
+import 'package:chat_app/models/chat_user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ChatUserCard extends StatefulWidget {
-  const ChatUserCard({super.key});
+
+  final ChatUser user;
+  const ChatUserCard({super.key, required this.user});
 
   @override
   State<ChatUserCard> createState() => _ChatUserCardState();
@@ -21,18 +25,29 @@ class _ChatUserCardState extends State<ChatUserCard> {
         onTap: (){},
         child: ListTile(
           /// User Profile Picture
-          leading: CircleAvatar(
-            child: Icon(CupertinoIcons.person),
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: CachedNetworkImage(
+              imageUrl: widget.user.image,
+              placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) => Icon(CupertinoIcons.person),
+            ),
           ),
 
           ///user name
-          title: Text('Demo user'),
+          title: Text(widget.user.name),
 
           ///last message
-          subtitle: Text('Last message user',maxLines: 1,),
+          subtitle: Text(widget.user.about,maxLines: 1,),
 
           ///last message time
-          trailing: Text('12.00',style: TextStyle(color: Colors.black),),
+          trailing:  Container(
+            width: 15,
+            height: 15,
+            decoration: BoxDecoration(
+                color: Colors.greenAccent.shade400,
+                borderRadius: BorderRadius.circular(10)),
+          ),
         ),
       ),
     );

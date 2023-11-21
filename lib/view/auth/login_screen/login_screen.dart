@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:chat_app/api/apis.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/view/home/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,13 +28,22 @@ class _LogInScreenState extends State<LogInScreen> {
   }
 
   _handleGoogleBtnClick(){
-    signInWithGoogle().then((user) {
+    signInWithGoogle().then((user) async {
       /*if(user!=null){
         log('\nUser: ${user.user}' as num);
         log('\nUserAdditionalInfo: ${user.additionalUserInfo}' as num);
       }*/
+      if ((await Apis.userExists())) {
+      Navigator.pushReplacement(
+      context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+      } else {
+      await Apis.createUser().then((value) {
+      Navigator.pushReplacement(
+      context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+      });
+      }
 
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>HomeScreen()));
+      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>HomeScreen()));
     });
   }
   Future<UserCredential> signInWithGoogle() async {
