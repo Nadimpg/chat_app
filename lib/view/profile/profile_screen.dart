@@ -19,6 +19,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final _formkey = GlobalKey<FormState>();
+  final TextEditingController textController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -33,23 +35,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ///for showing progress dialog
             //Dialogs.showProgressBar(context);
             await GoogleSignIn().signOut().then((value) {
-
               Fluttertoast.showToast(msg: "Successful");
               debugPrint("Sign out");
-
-              // Fluttertoast.showToast(
-              //     msg: "Logout SuccessFully",
-              //     toastLength: Toast.LENGTH_SHORT,
-              //     gravity: ToastGravity.CENTER,
-              //     timeInSecForIosWeb: 1,
-              //     backgroundColor: Colors.red,
-              //     textColor: Colors.white,
-              //     fontSize: 16.0
-              // );
               Navigator.pushReplacement(
                   context, MaterialPageRoute(builder: (_) => LogInScreen()));
-
-
             });
           },
           icon: Icon(
@@ -63,106 +52,127 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: Colors.redAccent,
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
-            SizedBox(
-              height: mq.height * .02,
-            ),
+      body: Form(
+        key: _formkey,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: mq.height * .02,
+                ),
 
-            ///Profile picture
-            SizedBox(
-              height: 100,
-              width: 100,
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: CachedNetworkImage(
-                        imageUrl: widget.user.image,
-                        height: 100,
-                        width: 100,
-                        placeholder: (context, url) =>
-                            CircularProgressIndicator(),
-                        errorWidget: (context, url, error) =>
-                            Icon(CupertinoIcons.person),
+                ///Profile picture
+                SizedBox(
+                  height: 150,
+                  width: 150,
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.center,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: CachedNetworkImage(
+                            imageUrl: widget.user.image,
+                            height: 100,
+                            width: 100,
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator(),
+                            errorWidget: (context, url, error) =>
+                                Icon(CupertinoIcons.person),
+                          ),
+                        ),
                       ),
-                    ),
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: MaterialButton(
+                          elevation: 1,
+                          height: 24,
+                          onPressed: () {},
+                          child: Icon(
+                            Icons.edit,
+                            color: Colors.blue,
+                            size: 18,
+                          ),
+                          color: Colors.white,
+                          shape: CircleBorder(),
+                        ),
+                      )
+                    ],
                   ),
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: MaterialButton(
-                      elevation: 1,
-                      height: 24,
-                      onPressed: () {},
-                      child: Icon(
-                        Icons.edit,
+                ),
+                Text(
+                  widget.user.email,
+                  style: TextStyle(color: Colors.black54, fontSize: 16),
+                ),
+                SizedBox(
+                  height: mq.height * .02,
+                ),
+                TextFormField(
+                  initialValue: widget.user.name,
+                  onSaved: (val) => Apis.me.name = val ?? '',
+                  validator: (val) =>
+                      val != null && val.isNotEmpty ? null : 'Required field',
+                  decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.person,
                         color: Colors.blue,
-                        size: 18,
                       ),
-                      color: Colors.white,
-                      shape: CircleBorder(),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Text(
-              widget.user.email,
-              style: TextStyle(color: Colors.black54, fontSize: 16),
-            ),
-            SizedBox(
-              height: mq.height * .02,
-            ),
-            TextFormField(
-              initialValue: widget.user.name,
-              decoration: InputDecoration(
-                  prefixIcon: Icon(
-                    Icons.person,
-                    color: Colors.blue,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      hintText: 'Nadim Hasan',
+                      label: Text('Name')),
+                ),
+                SizedBox(
+                  height: mq.height * .02,
+                ),
+                TextFormField(
+                  initialValue: widget.user.about,
+                  onSaved: (val) => Apis.me.about = val ?? '',
+                  validator: (val) =>
+                      val != null && val.isNotEmpty ? null : 'Required field',
+                  decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.info_outline,
+                        color: Colors.blue,
+                      ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      hintText: 'feeling!',
+                      label: Text('About')),
+                ),
+                SizedBox(
+                  height: mq.height * .02,
+                ),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                      shape: StadiumBorder(),
+                      minimumSize: Size(mq.width * .5, mq.height * .05),
+                      backgroundColor: Colors.blue),
+                  onPressed: () {
+                    if (_formkey.currentState!.validate()) {
+                      _formkey.currentState!.save();
+                      Apis.updateUserInfo().then((value) {
+                        Dialogs.showSnackbar(
+                          context,
+                          'Profile Update SuccessFully',
+                        );
+                      });
+                    }
+                  },
+                  icon: Icon(
+                    Icons.upload,
+                    color: Colors.white,
                   ),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  hintText: 'Nadim Hasan',
-                  label: Text('Name')),
-            ),
-            SizedBox(
-              height: mq.height * .02,
-            ),
-            TextFormField(
-              initialValue: widget.user.about,
-              decoration: InputDecoration(
-                  prefixIcon: Icon(
-                    Icons.info_outline,
-                    color: Colors.blue,
+                  label: Text(
+                    'Update',
+                    style: TextStyle(color: Colors.white),
                   ),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  hintText: 'feeling!',
-                  label: Text('About')),
+                )
+              ],
             ),
-            SizedBox(
-              height: mq.height * .02,
-            ),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                  shape: StadiumBorder(),
-                  minimumSize: Size(mq.width * .5, mq.height * .05),
-                  backgroundColor: Colors.blue),
-              onPressed: () {},
-              icon: Icon(
-                Icons.upload,
-                color: Colors.white,
-              ),
-              label: Text(
-                'Update',
-                style: TextStyle(color: Colors.white),
-              ),
-            )
-          ],
+          ),
         ),
       ),
     ));

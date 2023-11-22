@@ -69,5 +69,14 @@ class Apis {
         .snapshots();
   }
 
-
+  /// for update user info
+  static Future<void> updateUserInfo() async {
+     await fireStore
+        .collection('users')
+        .doc(user.uid)
+        .update({
+       'name' : me.name,
+       'about' : me.about
+     });
+  }
 }
